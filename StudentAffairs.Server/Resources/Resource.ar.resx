@@ -120,4 +120,124 @@
   <data name="Hello" xml:space="preserve">
     <value>مرحبًا</value>
   </data>
+  <data name="MenuHome" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>القسم</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>ذكر</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>انثى</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="Mobile" xml:space="preserve">
+    <value>الهاتف المحمول</value>
+  </data>
+  <data name="Date Of Birth" xml:space="preserve">
+    <value>تاريخ الميلاد</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>المستوى</value>
+  </data>
+  <data name="More Details" xml:space="preserve">
+    <value>المزيد من المعلومات</value>
+  </data>
+  <data name="StudentsGrid" xml:space="preserve">
+    <value>جدول الطلاب</value>
+  </data>
+  <data name="DepartmentsGrid" xml:space="preserve">
+    <value>جدول الاقسام</value>
+  </data>
+  <data name="ProfessorsGrid" xml:space="preserve">
+    <value>جدول الأساتذة</value>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="Credits" xml:space="preserve">
+    <value>الاعتماد</value>
+  </data>
+  <data name="CoursesGrid" xml:space="preserve">
+    <value>جدول  الدورات</value>
+  </data>
+  <data name="Students" xml:space="preserve">
+    <value>الطلاب</value>
+  </data>
+  <data name="Courses" xml:space="preserve">
+    <value>الدورات</value>
+  </data>
+  <data name="Professors" xml:space="preserve">
+    <value>الأساتذة</value>
+  </data>
+  <data name="Departments" xml:space="preserve">
+    <value>الاقسام</value>
+  </data>
+  <data name="Full Name Validation" xml:space="preserve">
+    <value>الاسم الكامل مطلوب.</value>
+  </data>
+  <data name="Full Name Length Validation" xml:space="preserve">
+    <value>يجب ان يكون الاسم الكامل بين 1 الي 100 حرف.</value>
+  </data>
+  <data name="Date Of Birth Validation" xml:space="preserve">
+    <value>تاريخ الميلاد مطلوب.</value>
+  </data>
+  <data name="Date of Birth must be in the past" xml:space="preserve">
+    <value>يجب ان يكون تاريخ الميلاد في الماضي</value>
+  </data>
+  <data name="Gender Validation" xml:space="preserve">
+    <value>النوع مطلوب.</value>
+  </data>
+  <data name="Gender Validation correct Message" xml:space="preserve">
+    <value>النوع يجب ان يكون ذكر او انثى</value>
+  </data>
+  <data name="Mobile Validation" xml:space="preserve">
+    <value>رقم الهاتف المحمول مطلوب.</value>
+  </data>
+  <data name="Mobile Length Validation" xml:space="preserve">
+    <value>لا يجب ان يزيد رقم الهاتف المحمول عن 15 رقمة</value>
+  </data>
+  <data name="Grade Level Validation" xml:space="preserve">
+    <value>يجب ان يكون المستوى بين 1 الي 12</value>
+  </data>
+  <data name="CreateStudent" xml:space="preserve">
+    <value>اضافة طالب</value>
+  </data>
+  <data name="CreateProfessor" xml:space="preserve">
+    <value>اضافة أستاذ</value>
+  </data>
+  <data name="CreateCourse" xml:space="preserve">
+    <value>اضافة دورة</value>
+  </data>
+  <data name="CreateDepartment" xml:space="preserve">
+    <value>اضافه قسم</value>
+  </data>
+  <data name="Name Validation" xml:space="preserve">
+    <value>الاسم مطلوب</value>
+  </data>
+  <data name="Name Length Validation" xml:space="preserve">
+    <value>يجب ان يكون الاسم بين 1 الي 100 حرف</value>
+  </data>
+  <data name="Course Code Validation" xml:space="preserve">
+    <value>الكود مطلوب</value>
+  </data>
+  <data name="Course Code Length Validation" xml:space="preserve">
+    <value>لا يجب ان يتعدى الكود 10 احرف</value>
+  </data>
+  <data name="Course Credits Validation" xml:space="preserve">
+    <value>الاعتماد يجب ان يكون بين 1 الي 10.</value>
+  </data>
+  <data name="Department Validation" xml:space="preserve">
+    <value>يجب ان تقوم بتحديد قسم.</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
 </root>

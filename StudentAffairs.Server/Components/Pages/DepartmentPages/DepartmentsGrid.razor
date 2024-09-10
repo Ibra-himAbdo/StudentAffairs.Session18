@@ -30,12 +30,3 @@ else
         </PagerContent>
     </MudTable>
 }
-
-
-@code {
-    private IReadOnlyList<Department> departments = new List<Department>();
-    private string searchValue = string.Empty;
-
-    protected async override Task OnInitializedAsync() 
-    => departments = await _unitOfWork.Repository<Department>().GetAllAsync();
-}

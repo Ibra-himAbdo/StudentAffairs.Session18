@@ -1,5 +1,4 @@
 ﻿@page "/courses"
-@using StudentsAffairs.INNOTECH.Core.Specifications.CourseSpecifications
 @inject IUnitOfWork _unitOfWork
 @inject IStringLocalizer<Resource> _localizer
 
@@ -49,16 +48,3 @@ else
     </MudTable>
 }
 
-@code {
-    private IReadOnlyList<Course> courses = new List<Course>();
-
-    protected async override Task OnInitializedAsync()
-    {
-        // Fetch courses data, including related department
-        var spec = new CourseWithDepartmentSpecification();
-        courses = await _unitOfWork.Repository<Course>().GetAllWithSpecificationAsync(spec);
-    }
-
-    private bool IsRTL { get; } = Thread.CurrentThread.CurrentCulture.Name.Equals("ar") ? true : false;
-    private string GetColumnClass() => IsRTL ? "rtl" : "ltr";
-}

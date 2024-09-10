@@ -18,3 +18,4 @@ global using StudentAffairs.Server.Dtos.CourseDtos;
 global using StudentAffairs.Server.Dtos.DepartmentDtos;
 global using StudentAffairs.Server.Dtos.ProfessorDtos;
 global using StudentAffairs.Server.Dtos.StudentDtos;
+global using StudentsAffairs.INNOTECH.Core.Specifications.CourseSpecifications;

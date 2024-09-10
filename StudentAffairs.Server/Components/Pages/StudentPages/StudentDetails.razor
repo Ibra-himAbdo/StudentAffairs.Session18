@@ -96,7 +96,12 @@ else
             { x => x.SelectedEnrollment, enrollment }
         };
 
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Large };
+        var options = new DialogOptions() 
+        { 
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraSmall,
+            FullWidth = true
+        };
 
         return DialogService.ShowAsync<AttendanceDialog>("Delete", parameters, options);
     }
