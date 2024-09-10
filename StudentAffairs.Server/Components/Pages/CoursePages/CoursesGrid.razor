@@ -1,0 +1,64 @@
+﻿@page "/courses"
+@using StudentsAffairs.INNOTECH.Core.Specifications.CourseSpecifications
+@inject IUnitOfWork _unitOfWork
+@inject IStringLocalizer<Resource> _localizer
+
+<MudText Class="mb-4" Typo="Typo.h5">@_localizer["CoursesGrid"]</MudText>
+
+@if (courses?.Count() == 0)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="courses" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel InitialDirection="SortDirection.Ascending"
+                                   SortBy="new Func<Course, object>(x => x.Name!)">@_localizer["Name"]</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Course, object>(x => x.Code!)">
+                    @_localizer["Code"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Course, object>(x => x.Credits)">
+                    @_localizer["Credits"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Course, object>(x => x.Department!.Name!)">
+                    @_localizer["Department"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>@_localizer["Action"]</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Code">@context.Code</MudTd>
+            <MudTd DataLabel="Credits">@context.Credits</MudTd>
+            <MudTd DataLabel="Department">@context.Department?.Name</MudTd>
+            <MudTd DataLabel="Action">
+                <MudLink Href="#" Typo="Typo.body2">@_localizer["More Details"]</MudLink>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{5, 10, 20}" />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private IReadOnlyList<Course> courses = new List<Course>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        // Fetch courses data, including related department
+        var spec = new CourseWithDepartmentSpecification();
+        courses = await _unitOfWork.Repository<Course>().GetAllWithSpecificationAsync(spec);
+    }
+
+    private bool IsRTL { get; } = Thread.CurrentThread.CurrentCulture.Name.Equals("ar") ? true : false;
+    private string GetColumnClass() => IsRTL ? "rtl" : "ltr";
+}

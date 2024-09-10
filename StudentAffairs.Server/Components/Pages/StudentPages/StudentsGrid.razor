@@ -1,0 +1,108 @@
+﻿@page "/students"
+@inject IUnitOfWork _unitOfWork
+@inject IStringLocalizer<Resource> _localizer
+@inject NavigationManager NavigationManager
+
+<MudText Class="mb-4" Typo="Typo.h5">@_localizer["StudentsGrid"]</MudText>
+
+<style>
+    .ltr {
+        direction: ltr; /* Left to Right */
+        text-align: center;
+    }
+
+    .rtl {
+        direction: rtl; /* Right to Left */
+        text-align: center;
+    }
+</style>
+
+
+@if (students?.Count() == 0)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudItem xs="12" sm="6" md="4" Class="mb-4">
+        <MudAutocomplete T="string" Label="Search" @bind-Value="value" SearchFunc="@Search"
+                         ResetValueOnEmptyText="true"
+                         CoerceText="true" CoerceValue="true"
+                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+    </MudItem>
+    <p>@value</p>
+    <MudTable Items="students" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel InitialDirection="SortDirection.Ascending"
+                                   SortBy="new Func<Student, object>(x => x.FullName!)">@_localizer["Name"]</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Student, object>(x => x.Department!.Name!)">
+                    @_localizer["Department"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Student, object>(x => x.Gender!)">
+                    @_localizer["Gender"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>@_localizer["Mobile"]</MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Student, object>(x => x.DateOfBirth!)">
+                    @_localizer["Date Of Birth"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Student, object>(x => x.GradeLevel)">
+                    @_localizer["Level"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>Action</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.FullName</MudTd>
+            <MudTd DataLabel="Department">@context.Department!.Name</MudTd>
+            <MudTd DataLabel="Gender">@_localizer[context.Gender!]</MudTd>
+            <MudTd DataLabel="Mobile">@context.Mobile</MudTd>
+            <MudTd Class="@GetColumnClass()" DataLabel="Date Of Birth">@context.DateOfBirth.ToShortDateString()</MudTd>
+            <MudTd DataLabel="Level">@context.GradeLevel</MudTd>
+            <MudTd DataLabel="Action">
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Primary"
+                           @onclick="@(() => NavigateToDetails(@context.Id))">
+                    @_localizer["More Details"]
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager Class="ltr" PageSizeOptions="new int[]{5, 10, 20}" />
+        </PagerContent>
+
+    </MudTable>
+}
+
+
+@code {
+    private IReadOnlyList<Student> students = new List<Student>();
+    private string value = string.Empty;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var spec = new StudentWithEnrollmentsAndDepartmentSpecification();
+        students = await _unitOfWork.Repository<Student>().GetAllWithSpecificationAsync(spec);
+    }
+
+    private Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+            return Task.FromResult<IEnumerable<string>>(new string[0]);
+        return Task.FromResult<IEnumerable<string>>(students.Where(x => x.NormalizedFullName!
+            .Contains(value, StringComparison.InvariantCultureIgnoreCase))
+            .Select(x => x.FullName)!);
+    }
+    private void NavigateToDetails(int id) => NavigationManager.NavigateTo($"/StudentDetails/{id}");
+
+    private bool IsRTL { get; } = Thread.CurrentThread.CurrentCulture.Name.Equals("ar") ? true : false;
+    private string GetColumnClass() => IsRTL ? "rtl" : "ltr";
+}

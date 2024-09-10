@@ -1,0 +1,52 @@
+﻿@inject IStringLocalizer<Resource> _localizer
+
+<MudNavMenu>
+    <MudNavLink Href=""
+                Match="NavLinkMatch.All"
+                Icon="@Icons.Material.Filled.Home">@_localizer["MenuHome"]</MudNavLink>
+
+    <MudNavGroup Title="@_localizer["Students"]">
+        <MudNavLink Href="students"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.GridView">@_localizer["StudentsGrid"]</MudNavLink>
+
+        <MudNavLink Href="create-student"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.Add">@_localizer["CreateStudent"]</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="@_localizer["Departments"]">
+
+        <MudNavLink Href="departments"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.GridView">@_localizer["DepartmentsGrid"]</MudNavLink>
+
+        <MudNavLink Href="create-department"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.Add">@_localizer["CreateDepartment"]</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="@_localizer["Professors"]">
+        <MudNavLink Href="professors"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.GridView">@_localizer["ProfessorsGrid"]</MudNavLink>
+
+        <MudNavLink Href="create-professor"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.Add">@_localizer["CreateProfessor"]</MudNavLink>
+
+    </MudNavGroup>
+
+    <MudNavGroup Title="@_localizer["Courses"]">
+        <MudNavLink Href="courses"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.GridView">@_localizer["CoursesGrid"]</MudNavLink>
+
+        <MudNavLink Href="create-course"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.Add">@_localizer["CreateCourse"]</MudNavLink>
+
+    </MudNavGroup>
+</MudNavMenu>
+
+

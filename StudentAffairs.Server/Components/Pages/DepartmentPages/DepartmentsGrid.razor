@@ -1,0 +1,41 @@
+﻿@page "/departments"
+@inject IUnitOfWork _unitOfWork
+@inject IStringLocalizer<Resource> _localizer
+<MudText Class="mb-4" Typo="Typo.h5">@_localizer["DepartmentsGrid"]</MudText>
+
+@if (departments?.Count() == 0)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="departments" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+        <HeaderContent>
+            <MudTh>Id</MudTh>
+            <MudTh>
+                <MudTableSortLabel InitialDirection="SortDirection.Ascending"
+                                   SortBy="new Func<Department, object>(x => x.Name!)">@_localizer["Name"]</MudTableSortLabel>
+            </MudTh>
+            <MudTh>@_localizer["Action"]</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Action">
+                <MudLink Href="#" Typo="Typo.body2">@_localizer["More Details"]</MudLink>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{5, 10, 20}" />
+        </PagerContent>
+    </MudTable>
+}
+
+
+@code {
+    private IReadOnlyList<Department> departments = new List<Department>();
+    private string searchValue = string.Empty;
+
+    protected async override Task OnInitializedAsync() 
+    => departments = await _unitOfWork.Repository<Department>().GetAllAsync();
+}

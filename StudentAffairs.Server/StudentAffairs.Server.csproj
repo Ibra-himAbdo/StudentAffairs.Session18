@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
+    <PackageReference Include="FluentValidation" Version="11.9.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.8" />
+    <PackageReference Include="MudBlazor" Version="7.*" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\StudentsAffairs.INNOTECH.Core\StudentsAffairs.INNOTECH.Core.csproj" />
+    <ProjectReference Include="..\StudentsAffairs.INNOTECH.Repository\StudentsAffairs.INNOTECH.Repository.csproj" />
+    <ProjectReference Include="..\StudentsAffairs.INNOTECH.Service\StudentsAffairs.INNOTECH.Service.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Compile Update="Resources\Resource.en-Us.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.en-Us.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resource.en-Us.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.en-Us.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

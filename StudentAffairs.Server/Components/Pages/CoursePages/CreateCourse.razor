@@ -1,0 +1,106 @@
+﻿@page "/create-course"
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Resource> _localizer
+@inject IUnitOfWork _unitOfWork
+@inject IMapper _mapper
+
+<EditForm Model="@courseModel" OnValidSubmit="OnValidSubmit">
+    <FluentValidationValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <!-- Course Name Field -->
+                    <MudTextField Class="mb-4" @bind-Value="courseModel.Name"
+                                  For="@(() => courseModel.Name)"
+                                  Label=@_localizer["Name"]
+                                  Immediate="true" />
+
+                    <!-- Course Code Field -->
+                    <MudTextField Class="mb-4" @bind-Value="courseModel.Code"
+                                  For="@(() => courseModel.Code)"
+                                  Label=@_localizer["Course Code"]
+                                  Immediate="true" />
+
+                    <!-- Credits Field -->
+                    <MudNumericField Class="mb-4" @bind-Value="courseModel.Credits"
+                                          For="@(() => courseModel.Credits)"
+                                          Label=@_localizer["Credits"]
+                                          Min="1" Max="10" />
+
+                    <!-- Department Select Field -->
+                    <MudSelect Class="mb-4"
+                               @bind-Value="courseModel.DepartmentId"
+                               Required="true"
+                               For="@(() => courseModel.DepartmentId)"
+                               Label=@_localizer["Department"]>
+                        @foreach (var department in departments)
+                        {
+                            <MudSelectItem Value="@department.Id">@department.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                        Submit
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                @if (success)
+                {
+                    <MudText Color="Color.Success">Success</MudText>
+                }
+                else
+                {
+                    <MudText Color="@Color.Error">
+                        <ValidationSummary />
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to see the success message.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    private AddCourseDto courseModel = new();
+    private IReadOnlyList<Department> departments = new List<Department>();
+    bool success = false;
+
+    private async Task OnValidSubmit()
+    {
+        success = true;
+        await SaveCourse(courseModel);
+        Snackbar.Add("Course information submitted successfully!", MudBlazor.Severity.Success);
+        courseModel = new();
+        success = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveCourse(AddCourseDto createdCourse)
+    {
+        var course = _mapper.Map<AddCourseDto, Course>(createdCourse);
+
+        var isCourseExist = await _unitOfWork.GetCourseRepository().IsCourseExist(course);
+        if (isCourseExist)
+        {
+            Snackbar.Add("Course already exists!", MudBlazor.Severity.Error);
+            return;
+        }
+
+        await _unitOfWork.Repository<Course>().AddAsync(course);
+        await _unitOfWork.CompleteAsync();
+    }
+
+    protected async override Task OnInitializedAsync()
+        => departments = await _unitOfWork.Repository<Department>().GetAllAsync();
+}

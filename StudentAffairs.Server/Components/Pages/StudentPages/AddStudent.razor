@@ -1,0 +1,122 @@
+﻿@page "/create-student"
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Resource> _localizer
+@inject IUnitOfWork _unitOfWork
+@inject IMapper _mapper
+
+<EditForm Model="@studentModel" OnValidSubmit="@(async () => await OnValidSubmit())">
+    <FluentValidationValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Class="mb-4" @bind-Value="studentModel.FullName"
+                                  For="@(() => studentModel.FullName)"
+                                  Label=@_localizer["Name"]
+                                  Immediate="true" />
+
+                    <MudDatePicker Class="mb-4" Editable="true" @bind-Date="studentModel.DateOfBirth"
+                                   ShowToolbar="false"
+                                   Label=@_localizer["Date Of Birth"] />
+
+                    <MudTextField Class="mb-4" @bind-Value="studentModel.Mobile"
+                                  For="@(() => studentModel.Mobile)"
+                                  Label=@_localizer["Mobile"]
+                                  Immediate="true" />
+
+                    <MudSelect Class="mb-4" T="string"
+                               @bind-Value="studentModel.Gender"
+                               For="@(() => studentModel.Gender)"
+                               Label=@_localizer["Gender"]>
+                        @foreach (var gender in StudentHelpers.Genders)
+                        {
+                            <MudSelectItem Value="@gender">@_localizer[gender]</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <MudNumericField Class="mb-4" @bind-Value="studentModel.GradeLevel"
+                                     For="@(() => studentModel.GradeLevel)" />
+
+                    <MudSelect Class="mb-4"
+                               @bind-Value="studentModel.DepartmentId"
+                               Required="true"
+                               Placeholder="Select Department"
+                               For="@(() => studentModel.DepartmentId)"
+                               Label=@_localizer["Department"]>
+                        @foreach (var department in departments)
+                        {
+                            <MudSelectItem Value="@department.Id">@department.Name</MudSelectItem>
+                        }
+
+                    </MudSelect>
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                @if (success)
+                {
+                    <MudText Color="Color.Success">Success</MudText>
+                }
+                else
+                {
+                    <MudText Color="@Color.Error">
+                        <ValidationSummary />
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to see the success message.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+</EditForm>
+
+@code {
+    private StudentToCreateDto studentModel = new();
+    private IReadOnlyList<Department> departments = new List<Department>();
+    bool success = false;
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            await SaveStudent(studentModel);
+            Snackbar.Add("Student information submitted successfully!", MudBlazor.Severity.Success);
+            studentModel = new(); // Reset form model
+            success = true;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}", MudBlazor.Severity.Error);
+            success = false;
+        }
+    }
+
+    private async Task SaveStudent(StudentToCreateDto createdStudent)
+    {
+        var student = _mapper.Map<Student>(createdStudent);
+
+        var IsStudentExist = await _unitOfWork.GetStudentRepository().IsStudentExist(student);
+        if (IsStudentExist)
+        {
+            Snackbar.Add("Student already exist!", MudBlazor.Severity.Error);
+            return;
+        }
+
+        await _unitOfWork.Repository<Student>().AddAsync(student);
+        await _unitOfWork.CompleteAsync();
+    }
+
+
+
+    protected async override Task OnInitializedAsync()
+        => departments = await _unitOfWork.Repository<Department>().GetAllAsync();
+}

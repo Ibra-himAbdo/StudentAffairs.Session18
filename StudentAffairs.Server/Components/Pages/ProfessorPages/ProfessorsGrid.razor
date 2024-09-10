@@ -1,0 +1,65 @@
+﻿@page "/professors"
+@using StudentsAffairs.INNOTECH.Core.Specifications.ProfessorSpecifications
+@inject IUnitOfWork _unitOfWork
+@inject IStringLocalizer<Resource> _localizer
+
+<MudText Class="mb-4" Typo="Typo.h5">@_localizer["ProfessorsGrid"]</MudText>
+
+<style>
+    .ltr {
+        direction: ltr; /* Left to Right */
+        text-align: center;
+    }
+
+    .rtl {
+        direction: rtl; /* Right to Left */
+        text-align: center;
+    }
+</style>
+
+@if (professors?.Count() == 0)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="professors" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel InitialDirection="SortDirection.Ascending"
+                                   SortBy="new Func<Professor, object>(x => x.FullName!)">@_localizer["Name"]</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<Professor, object>(x => x.Department!.Name!)">
+                    @_localizer["Department"]
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>@_localizer["Mobile"]</MudTh>
+            <MudTh>@_localizer["Actions"]</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.FullName</MudTd>
+            <MudTd DataLabel="Department">@context.Department?.Name</MudTd>
+            <MudTd DataLabel="Mobile">@context.Mobile</MudTd>
+            <MudTd DataLabel="Action">
+                <MudLink Href="#" Typo="Typo.body2">@_localizer["More Details"]</MudLink>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager Class="ltr" PageSizeOptions="new int[]{5, 10, 20}" />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private IReadOnlyList<Professor> professors = new List<Professor>();
+    private string searchValue = string.Empty;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var spec = new ProfessorWithDepartmentSpecification();
+        professors = await _unitOfWork.Repository<Professor>().GetAllWithSpecificationAsync(spec);
+    }
+    private bool IsRTL { get; } = Thread.CurrentThread.CurrentCulture.Name.Equals("ar") ? true : false;
+    private string GetColumnClass() => IsRTL ? "rtl" : "ltr";
+}

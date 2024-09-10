@@ -1,0 +1,101 @@
+﻿@page "/create-professor"
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Resource> _localizer
+@inject IUnitOfWork _unitOfWork
+@inject IMapper _mapper
+
+<EditForm Model="@professorModel" OnValidSubmit="@(async () => await OnValidSubmit())">
+    <FluentValidationValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <!-- Full Name Field -->
+                    <MudTextField Class="mb-4" @bind-Value="professorModel.FullName"
+                                  For="@(() => professorModel.FullName)"
+                                  Label=@_localizer["Full Name"]
+                                  Immediate="true" />
+
+                    <!-- Mobile Field -->
+                    <MudTextField Class="mb-4" @bind-Value="professorModel.Mobile"
+                                  For="@(() => professorModel.Mobile)"
+                                  Label=@_localizer["Mobile"]
+                                  Immediate="true" />
+
+                    <!-- Department Select Field -->
+                    <MudSelect Class="mb-4"
+                               @bind-Value="professorModel.DepartmentId"
+                               Required="true"
+                               Placeholder="Select Department"
+                               For="@(() => professorModel.DepartmentId)"
+                               Label=@_localizer["Department"]>
+                        @foreach (var department in departments)
+                        {
+                            <MudSelectItem Value="@department.Id">@department.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                        Submit
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                @if (success)
+                {
+                    <MudText Color="Color.Success">Success</MudText>
+                }
+                else
+                {
+                    <MudText Color="@Color.Error">
+                        <ValidationSummary />
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to see the success message.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    private AddProfessorDto professorModel = new();
+    private IReadOnlyList<Department> departments = new List<Department>();
+    bool success = false;
+
+    private async Task OnValidSubmit()
+    {
+        success = true;
+        await SaveProfessor(professorModel);
+        Snackbar.Add("Professor information submitted successfully!", MudBlazor.Severity.Success);
+        professorModel = new();
+        success = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveProfessor(AddProfessorDto professorToCreateDto)
+    {
+        var professor = _mapper.Map<AddProfessorDto, Professor>(professorToCreateDto);
+
+        var isProfessorExist = await _unitOfWork.GetProfessorRepository().IsProfessorExist(professor);
+        if (isProfessorExist)
+        {
+            Snackbar.Add("Professor already exists!", MudBlazor.Severity.Error);
+            return;
+        }
+
+        await _unitOfWork.Repository<Professor>().AddAsync(professor);
+        await _unitOfWork.CompleteAsync();
+    }
+
+    protected async override Task OnInitializedAsync()
+        => departments = await _unitOfWork.Repository<Department>().GetAllAsync();
+}

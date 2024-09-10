@@ -1,0 +1,40 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Attendance Details</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (SelectedEnrollment is not null && SelectedEnrollment.Attendances?.Count() > 0)
+        {
+            <MudTable Items="@SelectedEnrollment.Attendances" Hover="true">
+                <HeaderContent>
+                    <MudTh>Attendance Date</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.AttendanceDate?.ToShortDateString()</MudTd>
+                    <MudTd>@context.Status</MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+        else
+        {
+            <MudText>There are no attendances for this student.</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public EnrollmentToReturnWithStudentDto? SelectedEnrollment { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
