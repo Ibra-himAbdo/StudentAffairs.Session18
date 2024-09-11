@@ -1,6 +1,7 @@
 ﻿@page "/departments"
 @inject IUnitOfWork _unitOfWork
 @inject IStringLocalizer<Resource> _localizer
+@inject NavigationManager NavigationManager
 <MudText Class="mb-4" Typo="Typo.h5">@_localizer["DepartmentsGrid"]</MudText>
 
 @if (departments?.Count() == 0)
@@ -22,7 +23,16 @@ else
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Action">
-                <MudLink Href="#" Typo="Typo.body2">@_localizer["More Details"]</MudLink>
+                <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+                           @onclick="@(() => NavigateToEditPage(@context.Id))">
+                    @_localizer["Edit"]
+                </MudButton>
+
+                <MudButton Size="Size.Small" Variant="Variant.Outlined"
+                           Color="Color.Secondary"
+                           @onclick="@(() => NavigateToDeletePage(@context.Id))">
+                    @_localizer["Delete"]
+                </MudButton>
             </MudTd>
         </RowTemplate>
         <PagerContent>

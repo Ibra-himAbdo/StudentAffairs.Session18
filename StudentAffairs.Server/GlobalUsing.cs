@@ -19,3 +19,5 @@ global using StudentAffairs.Server.Dtos.DepartmentDtos;
 global using StudentAffairs.Server.Dtos.ProfessorDtos;
 global using StudentAffairs.Server.Dtos.StudentDtos;
 global using StudentsAffairs.INNOTECH.Core.Specifications.CourseSpecifications;
+global using Microsoft.AspNetCore.Components;
+global using StudentsAffairs.INNOTECH.Core.Specifications.StudentSpecifications;

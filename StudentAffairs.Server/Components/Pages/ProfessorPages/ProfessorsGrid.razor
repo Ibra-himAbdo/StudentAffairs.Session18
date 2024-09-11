@@ -2,7 +2,7 @@
 @using StudentsAffairs.INNOTECH.Core.Specifications.ProfessorSpecifications
 @inject IUnitOfWork _unitOfWork
 @inject IStringLocalizer<Resource> _localizer
-
+@inject NavigationManager NavigationManager
 <MudText Class="mb-4" Typo="Typo.h5">@_localizer["ProfessorsGrid"]</MudText>
 
 <style>
@@ -42,7 +42,16 @@ else
             <MudTd DataLabel="Department">@context.Department?.Name</MudTd>
             <MudTd DataLabel="Mobile">@context.Mobile</MudTd>
             <MudTd DataLabel="Action">
-                <MudLink Href="#" Typo="Typo.body2">@_localizer["More Details"]</MudLink>
+                <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+                           @onclick="@(() => NavigateToEditPage(@context.Id))">
+                    @_localizer["Edit"]
+                </MudButton>
+
+                <MudButton Size="Size.Small" Variant="Variant.Outlined"
+                           Color="Color.Secondary"
+                           @onclick="@(() => NavigateToDeletePage(@context.Id))">
+                    @_localizer["Delete"]
+                </MudButton>
             </MudTd>
         </RowTemplate>
         <PagerContent>
@@ -62,4 +71,7 @@ else
     }
     private bool IsRTL { get; } = Thread.CurrentThread.CurrentCulture.Name.Equals("ar") ? true : false;
     private string GetColumnClass() => IsRTL ? "rtl" : "ltr";
+
+    private void NavigateToEditPage(int Id) => NavigationManager.NavigateTo($"/update-professor/{Id}");
+    private void NavigateToDeletePage(int Id) => NavigationManager.NavigateTo($"/delete-professor/{Id}");
 }

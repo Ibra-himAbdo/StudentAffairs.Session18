@@ -9,4 +9,6 @@ public partial class CoursesGrid
         var spec = new CourseWithDepartmentSpecification();
         courses = await _unitOfWork.Repository<Course>().GetAllWithSpecificationAsync(spec);
     }
+    private void NavigateToEditPage(int Id) => NavigationManager.NavigateTo($"/update-course/{Id}");
+    private void NavigateToDeletePage(int Id) => NavigationManager.NavigateTo($"/delete-course/{Id}");
 }

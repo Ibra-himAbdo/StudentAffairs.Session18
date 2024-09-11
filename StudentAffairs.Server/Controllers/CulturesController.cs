@@ -1,6 +1,6 @@
 ﻿namespace StudentAffairs.Server.Controllers;
 
-[Route("[controller]/[action]")]
+[Microsoft.AspNetCore.Mvc.Route("[controller]/[action]")]
 public class CulturesController : Controller
 {
     public IActionResult SetCulture(string culture, string redirectUri)

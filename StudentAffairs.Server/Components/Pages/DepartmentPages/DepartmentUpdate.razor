@@ -1,0 +1,97 @@
+﻿@page "/update-department/{deptId:int}"
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Resource> _localizer
+@inject IUnitOfWork _unitOfWork
+@inject IMapper _mapper
+@using StudentAffairs.Server.Dtos
+
+
+<EditForm Model="@deptModel" OnValidSubmit="OnValidSubmit">
+    <FluentValidationValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Class="mb-4" @bind-Value="deptModel.Name"
+                                  For="@(() => deptModel.Name)"
+                                  Label="@_localizer["Name"]"
+                                  Immediate="true" />
+
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ml-auto">Update</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                @if (success)
+                {
+                    <MudText Color="Color.Success">Success</MudText>
+                }
+                else
+                {
+                    <MudText Color="@Color.Error">
+                        <ValidationSummary />
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Update the form correctly to see the success message.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int DeptId { get; set; }
+
+    private UpdateDepartmentDto deptModel = new();
+    private IReadOnlyList<Department> departments = new List<Department>();
+    private bool success = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadStudent();
+        departments = await _unitOfWork.Repository<Department>().GetAllAsync();
+    }
+
+    private async Task LoadStudent()
+    {
+        var prof = await _unitOfWork.Repository<Department>().GetByIdAsync(DeptId);
+        if (prof != null)
+        {
+            deptModel = _mapper.Map<UpdateDepartmentDto>(prof);
+        }
+        else
+        {
+            Snackbar.Add("Department not found.", MudBlazor.Severity.Error);
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        var dept = await _unitOfWork.Repository<Department>().GetByIdAsync(deptModel.Id);
+        if (dept == null)
+        {
+            Snackbar.Add("Department not found.", MudBlazor.Severity.Error);
+            return;
+        }
+
+        _mapper.Map(deptModel, dept);
+        _unitOfWork.Repository<Department>().Update(dept);
+        await _unitOfWork.CompleteAsync();
+
+        Snackbar.Add("Department information updated successfully!", MudBlazor.Severity.Success);
+        success = true;
+        StateHasChanged();
+    }
+}
