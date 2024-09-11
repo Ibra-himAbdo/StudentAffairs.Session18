@@ -1,0 +1,87 @@
+﻿@page "/DeleteStudent/{studentId:int}"
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Resource> _localizer
+@inject IUnitOfWork _unitOfWork
+@inject IMapper _mapper
+@inject NavigationManager NavigationManager
+
+
+<MudText Class="mb-4" Typo="Typo.h5">@_localizer["DeleteStudent"]</MudText>
+
+@if (isLoading || _student is null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else
+{
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">@_student.FullName</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Date Of Birth"]: </strong></MudText>
+                    <MudText Typo="Typo.body1" Inline="true">@_student.DateOfBirth.ToShortDateString()</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Gender"]: </strong></MudText>
+                    <MudText Typo="Typo.body1" Inline="true">@_student.Gender</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Mobile"]: </strong></MudText>
+                    <MudText Typo="Typo.body1" Inline="true">@_student.Mobile</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Department"]: </strong></MudText>
+                    <MudText Typo="Typo.body1" Inline="true">@_student.Department</MudText>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Class="ma-1" Variant="Variant.Outlined"
+                       Size="Size.Medium"
+                       Color="Color.Error"
+                       @onclick="@(async () => await DeleteStudentAsync())">
+                @_localizer["Delete"]
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+}
+@code {
+    [Parameter]
+    public int StudentId { get; set; }
+    private bool isLoading = true;
+
+    Student? _student;
+    protected override async Task OnInitializedAsync()
+        => await LoadStudent();
+    private async Task LoadStudent()
+    {
+        _student = await _unitOfWork.Repository<Student>().GetByIdAsync(StudentId);
+        if (_student is null)
+        {
+            Snackbar.Add("Student not found.", MudBlazor.Severity.Error);
+            return;
+        }
+
+        isLoading = false;
+            
+    }
+
+    private async Task DeleteStudentAsync()
+    {
+        if (_student is null)
+        {
+            Snackbar.Add("Student not found.", MudBlazor.Severity.Error);
+            return;
+        }
+
+        _unitOfWork.Repository<Student>().Delete(_student);
+        await _unitOfWork.CompleteAsync();
+
+        Snackbar.Add("Student deleted successfully.", MudBlazor.Severity.Success);
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        NavigationManager.NavigateTo("/Students");
+    }
+}

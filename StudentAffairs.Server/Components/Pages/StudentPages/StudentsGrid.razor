@@ -33,6 +33,9 @@ else
     <p>@value</p>
     <MudTable Items="students" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
         <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<Student, object>(x => x.Id)">
+                @_localizer["Id"]
+            </MudTableSortLabel></MudTh>
             <MudTh>
                 <MudTableSortLabel InitialDirection="SortDirection.Ascending"
                                    SortBy="new Func<Student, object>(x => x.FullName!)">@_localizer["Name"]</MudTableSortLabel>
@@ -61,6 +64,7 @@ else
             <MudTh>Action</MudTh>
         </HeaderContent>
         <RowTemplate>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="Name">@context.FullName</MudTd>
             <MudTd DataLabel="Department">@context.Department!.Name</MudTd>
             <MudTd DataLabel="Gender">@_localizer[context.Gender!]</MudTd>
@@ -101,6 +105,7 @@ else
             .Contains(value, StringComparison.InvariantCultureIgnoreCase))
             .Select(x => x.FullName)!);
     }
+
     private void NavigateToDetails(int id) => NavigationManager.NavigateTo($"/StudentDetails/{id}");
 
     private bool IsRTL { get; } = Thread.CurrentThread.CurrentCulture.Name.Equals("ar") ? true : false;

@@ -1,5 +1,54 @@
-﻿<h3>Search</h3>
+﻿@page "/search"
+<h3>Search</h3>
+@page "/toggle-button-list"
+
+<!-- Render buttons dynamically from a list -->
+<div>
+    @foreach (var buttonId in buttonIds)
+    {
+        <MudButton @onclick="() => ToggleButton(buttonId)"
+                   Class="ma-1 rounded-pill"
+                   Size="Size.Small"
+                   StartIcon="@(selectedIds.Contains(buttonId) ? @Icons.Material.Outlined.Check : null)"
+                   Variant="Variant.Outlined"
+                   Color="@(selectedIds.Contains(buttonId) ? Color.Success : Color.Primary)"
+                   Disabled="@IsButtonDisabled(buttonId)">
+            Button @buttonId
+        </MudButton>
+    }
+</div>
+
+<!-- Display selected button IDs -->
+<MudText>You selected: @string.Join(", ", selectedIds)</MudText>
 
 @code {
+    // List of button IDs
+    private List<int> buttonIds = new List<int> { 1, 2, 3, 4, 5 };
 
+    // List to keep track of selected button IDs
+    private List<int> selectedIds = new List<int>();
+
+    // Maximum number of selectable buttons
+    private const int MaxSelectableButtons = 3;
+
+    // Method to toggle button selection
+    private void ToggleButton(int buttonId)
+    {
+        // If the button ID is already in the list, remove it; otherwise, add it
+        if (selectedIds.Contains(buttonId))
+        {
+            selectedIds.Remove(buttonId);
+        }
+        else if (selectedIds.Count < MaxSelectableButtons)
+        {
+            selectedIds.Add(buttonId);
+        }
+    }
+
+    // Determine if a button should be disabled
+    private bool IsButtonDisabled(int buttonId)
+    {
+        // Disable buttons that are not selected if the max limit is reached
+        return !selectedIds.Contains(buttonId) && selectedIds.Count >= MaxSelectableButtons;
+    }
 }

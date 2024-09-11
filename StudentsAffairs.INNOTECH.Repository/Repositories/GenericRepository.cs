@@ -42,4 +42,22 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     public async Task AddRangeAsync(IEnumerable<T> entities) 
         => await _context.Set<T>().AddRangeAsync(entities);
+
+    public void UpdateRange(IEnumerable<T> entities)
+    {
+        foreach (var entity in entities)
+        {
+            var local = _context.Set<T>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(entity.Id));
+
+            if (local != null)
+            {
+                _context.Entry(local).State = EntityState.Detached;
+            }
+
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+    }
+
 }

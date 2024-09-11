@@ -1,0 +1,134 @@
+﻿@page "/StudentGrade/{StudentId:int}"
+@inject IUnitOfWork _unitOfWork
+@inject IStringLocalizer<Resource> _localizer
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+@if (_isLoading || _student is null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudItem xs="12" sm="7">
+        <MudCard>
+            <MudCardHeader>
+                <MudStack>
+                    <MudText Typo="Typo.h6">@_student.FullName</MudText>
+                    <MudGrid>
+                        <MudItem>
+                            <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Date Of Birth"]: </strong></MudText>
+                            <MudText Typo="Typo.body1" Inline="true">@_student.DateOfBirth.ToShortDateString()</MudText>
+                        </MudItem>
+                        <MudItem>
+                            <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Gender"]: </strong></MudText>
+                            <MudText Typo="Typo.body1" Inline="true">@_student.Gender</MudText>
+                        </MudItem>
+                        <MudItem>
+                            <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Mobile"]: </strong></MudText>
+                            <MudText Typo="Typo.body1" Inline="true">@_student.Mobile</MudText>
+                        </MudItem>
+                        <MudItem>
+                            <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Department"]:  </strong></MudText>
+                            <MudText Typo="Typo.body1" Inline="true">@_student.Department!.Name</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudStack>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudItem>
+                    <MudText Typo="Typo.h6" Inline="true"><strong>@_localizer["Courses"]: </strong></MudText>
+                </MudItem>
+                <MudSimpleTable Style=" max-width: 400px; overflow-x: auto; ">
+                    <thead>
+                        <tr>
+                            <th><MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Courses"]</strong></MudText></th>
+                            <th><MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Grade"]</strong></MudText></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var enrollment in _student.Enrollments)
+                        {
+                            <tr>
+                                <td style="width: 200px;"><MudText Typo="Typo.subtitle1" Inline="true"><strong>@enrollment.Course!.Name:</strong></MudText></td>
+                                <td style="max-width: 15px;">
+                                    <MudSelect T="string" @bind-Value="enrollment.Grade">
+                                        @foreach (var grade in StudentHelpers.Grades)
+                                        {
+                                            <MudSelectItem Value="@grade">@grade</MudSelectItem>
+                                        }
+                                    </MudSelect></td>
+                            </tr>
+                        }
+                    </tbody>
+                </MudSimpleTable>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           Class="ml-auto"
+                           Disabled="@_student.Enrollments.Any(x => x.Grade is null)"
+                           @onclick="Submit">
+                    Submit
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+
+    </MudItem>
+}
+
+<h3>StudentGrade</h3>
+
+@code {
+    [Parameter] public int StudentId { get; set; }
+
+    private bool _isLoading = true;
+    private Student? _student;
+    private List<Enrollment> _oldEnrollments = new();
+
+    protected override async Task OnInitializedAsync() => await LoadStudentData();
+
+    private async Task LoadStudentData()
+    {
+        var studentSpec = new StudentWithEnrollmentsAndDepartmentSpecification(StudentId);
+        _student = await _unitOfWork.Repository<Student>().GetByIdWithSpecificationAsync(studentSpec);
+
+        if (_student is null)
+        {
+            Snackbar.Add("Student not found.", MudBlazor.Severity.Error);
+            return;
+        }
+        _oldEnrollments = _student.Enrollments
+            .Select(e => new Enrollment { Id = e.Id, Grade = e.Grade, StudentId = e.StudentId, CourseId = e.CourseId })
+            .ToList();
+
+        _isLoading = false;
+    }
+    private async Task Submit()
+    {
+        Console.WriteLine(string.Join(",", _student!.Enrollments.Select(x => x.Grade)));
+        var message = await UpdateEnrollmentGrads();
+        Snackbar.Add(message, MudBlazor.Severity.Success);
+        StateHasChanged();
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        NavigateToStudentDetails(StudentId);
+    }
+
+    private async Task<string> UpdateEnrollmentGrads()
+    {
+        var updatedEnrollments = _student!.Enrollments
+            .Where(x => _oldEnrollments.Any(o => o.Id == x.Id && o.Grade != x.Grade))
+            .ToList();
+
+        if (!updatedEnrollments.Any())
+            return "No changes";
+
+        _unitOfWork.Repository<Enrollment>().UpdateRange(updatedEnrollments);
+        await _unitOfWork.CompleteAsync();
+
+        return "updated";
+    }
+    private void NavigateToStudentDetails(int id) => NavigationManager.NavigateTo($"/StudentDetails/{id}");
+    
+}

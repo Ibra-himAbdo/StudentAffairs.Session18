@@ -19,19 +19,19 @@ else
         <MudCardContent>
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>Date of Birth: </strong></MudText>
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Date Of Birth"]: </strong></MudText>
                     <MudText Typo="Typo.body1" Inline="true">@student.DateOfBirth.ToShortDateString()</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>Gender: </strong></MudText>
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Gender"]: </strong></MudText>
                     <MudText Typo="Typo.body1" Inline="true">@student.Gender</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>Mobile: </strong></MudText>
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Mobile"]: </strong></MudText>
                     <MudText Typo="Typo.body1" Inline="true">@student.Mobile</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>Department: </strong></MudText>
+                    <MudText Typo="Typo.subtitle1" Inline="true"><strong>@_localizer["Department"]: </strong></MudText>
                     <MudText Typo="Typo.body1" Inline="true">@student.Department</MudText>
                 </MudItem>
             </MudGrid>
@@ -39,10 +39,10 @@ else
 
             <MudTable Items="@student.Enrollments" Hover="true">
                 <HeaderContent>
-                    <MudTh>Course</MudTh>
-                    <MudTh>Grade</MudTh>
-                    <MudTh>Enrollment Date</MudTh>
-                    <MudTh>Attendance</MudTh>
+                    <MudTh>@_localizer["Course"]</MudTh>
+                    <MudTh>@_localizer["Grade"]</MudTh>
+                    <MudTh>@_localizer["EnrollmentDate"]</MudTh>
+                    <MudTh>@_localizer["Attendance"]</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd>@context.Course</MudTd>
@@ -50,17 +50,24 @@ else
                     <MudTd>@context.EnrollmentDate.ToShortDateString()</MudTd>
                     <MudTd>
                         <MudButton Variant="Variant.Outlined" Color="Color.Primary" @onclick="@( async () => await ToggleAttendanceDialog(@context))">
-                            View Attendance
+                            @_localizer["ViewAttendance"]
                         </MudButton>
                     </MudTd>
                 </RowTemplate>
             </MudTable>
         </MudCardContent>
         <MudCardActions>
-            <MudButton Variant="Variant.Text"
+            <MudButton Class="ma-1" Variant="Variant.Outlined"
+                       Size="Size.Medium"
                        Color="Color.Primary"
                        @onclick="@(() => NavigateToEdit(@StudentId))">
                 @_localizer["Edit"]
+            </MudButton>
+            <MudButton Class="ma-1" Variant="Variant.Outlined"
+                       Size="Size.Medium"
+                       Color="Color.Error"
+                       @onclick="@(() => NavigateToDelete(@StudentId))">
+                @_localizer["Delete"]
             </MudButton>
         </MudCardActions>
     </MudCard>
@@ -107,4 +114,5 @@ else
     }
 
     private void NavigateToEdit(int id) => NavigationManager.NavigateTo($"/update-student/{id}");
+    private void NavigateToDelete(int id) => NavigationManager.NavigateTo($"/DeleteStudent/{id}");
 }

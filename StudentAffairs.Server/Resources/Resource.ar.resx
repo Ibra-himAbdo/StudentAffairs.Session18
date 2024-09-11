@@ -240,4 +240,31 @@
   <data name="Edit" xml:space="preserve">
     <value>تعديل</value>
   </data>
+  <data name="Grade" xml:space="preserve">
+    <value>التقيم</value>
+  </data>
+  <data name="EnrollmentDate" xml:space="preserve">
+    <value>تاريخ التقديم</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>الحضور</value>
+  </data>
+  <data name="ViewAttendance" xml:space="preserve">
+    <value>الاطلاع على الحضور</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="Course" xml:space="preserve">
+    <value>الدورة</value>
+  </data>
+  <data name="DeleteStudent" xml:space="preserve">
+    <value>حذف طالب</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="Enrollments" xml:space="preserve">
+    <value>التسجيلات</value>
+  </data>
 </root>

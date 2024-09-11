@@ -3,6 +3,7 @@
 @inject IStringLocalizer<Resource> _localizer
 @inject IUnitOfWork _unitOfWork
 @inject IMapper _mapper
+@inject NavigationManager NavigationManager
 @using StudentAffairs.Server.Dtos.StudentDtos
 
 
@@ -57,7 +58,11 @@
                     <MudButton ButtonType="ButtonType.Submit" 
                                Variant="Variant.Filled" 
                                Color="Color.Primary" 
-                               Class="ml-auto">Submit</MudButton>
+                               Class="ma-1">@_localizer["Submit"]</MudButton>
+                    <MudButton @onclick="@(() => NavigateToEnrollments(@StudentId))"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="ma-1">@_localizer["Enrollments"]</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -87,7 +92,7 @@
 @code {
     [Parameter]
     public int StudentId { get; set; }
-    
+
     private UpdateStudentDto studentModel = new();
     private IReadOnlyList<Department> departments = new List<Department>();
     private bool success = false;
@@ -123,9 +128,11 @@
         _mapper.Map(studentModel, student);
         _unitOfWork.Repository<Student>().Update(student);
         await _unitOfWork.CompleteAsync();
-
         Snackbar.Add("Student information updated successfully!", MudBlazor.Severity.Success);
         success = true;
         StateHasChanged();
+        NavigateToEnrollments(StudentId);
     }
+
+    private void NavigateToEnrollments(int id) => NavigationManager.NavigateTo($"/AddEnrollmentToStudent/{id}");
 }

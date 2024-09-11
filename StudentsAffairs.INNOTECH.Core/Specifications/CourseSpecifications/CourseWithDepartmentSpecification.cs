@@ -31,8 +31,8 @@ public class CourseWithDepartmentSpecification : BaseSpecification<Course>
         else
             AddOrderBy(S => S.Name!);
 
-        ApplyPagination((specificationParams.PageIndex - 1) * specificationParams.PageSize,
-            specificationParams.PageSize);
+        //ApplyPagination((specificationParams.PageIndex - 1) * specificationParams.PageSize,
+        //    specificationParams.PageSize);
     }
 
     public CourseWithDepartmentSpecification()
